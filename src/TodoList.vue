@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import TodoItem from "@/TodoItem.vue";
 
-let id = 0
+let id = 1
 const todos = ref<{ id: number, text: string, done: boolean }[]>([])
 for (let i = 0; i < 10; i++) {
   todos.value.push({ id:id++, text: `Eintrag ${i}`, done: false})
@@ -12,10 +12,11 @@ const hiddenTodos = computed(() => {
   return todos.value.filter((t) => !t.done)
 })
 
-function updateTodo(string: new_Name, id: number){
-  let todo_to_update = todos.value.filter((t) => t.id == id)[0]
-  console.log(todo_to_update)
-  todo_to_update.text = new_Name
+function updateTodo(new_Name: string, id: number){
+  const todo_to_update = todos.value.filter((t) => t.id == id)[0]
+  if(todo_to_update){
+    todo_to_update.text = new_Name
+  }
 }
 </script>
 
@@ -25,9 +26,9 @@ function updateTodo(string: new_Name, id: number){
     <ul class="list">
         <TodoItem
           v-for = "todo in hiddenTodos"
-          :id = todo.id
+          :initial_id = todo.id
           :initial_todo_item_name = todo.text
-          @edit_done="updateTodo(todo.text, todo.id)"
+          @edit_done="updateTodo"
           @done="todo.done = true"></TodoItem>
 <!--      //text aus emit und nicht von todo.text nehmen-->
     </ul>
