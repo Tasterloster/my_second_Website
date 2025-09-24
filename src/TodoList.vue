@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import {computed, ref } from "vue";
 import TodoItem from "@/TodoItem.vue";
 
 let id = 0
 const todosSize = 100
 const globalEditActive = ref(false)
+const draggingItem = ref<todo|null>(null)
+
+interface todo {
+  id: number
+  text: string
+  done: boolean
+}
+
 
 const todos = ref<{ id: number, text: string, done: boolean }[]>([])
 for (let i = 0; i < todosSize; i++) {
@@ -34,22 +42,43 @@ function flagDone(id: number){
 function editActive(){
   globalEditActive.value = true
 }
+function startDragging(todo: todo){
+  draggingItem.value = todo
+}
+
+function handleDrop(targetItem: todo){
+  if (!draggingItem.value || draggingItem.value.id === targetItem.id) return
+
+  const draggedIndex = todos.value.findIndex(i => i.id === draggingItem.value!.id)
+  const targetIndex = todos.value.findIndex(i => i.id === targetItem.id)
+
+  todos.value.splice(draggedIndex, 1)
+  todos.value.splice(targetIndex, 0, draggingItem.value)
+
+  draggingItem.value = null
+}
 </script>
 
 <template>
   <body>
   <h1>Todo Liste</h1>
-  <div class="container">
+  <div class="listContainer">
     <ul class="list">
         <TodoItem
+          class="listItem"
           v-for = "(todo, idx) in hiddenTodos" :key="todo.id"
+          :draggable="true"
           :list_id = idx
           :initial_id = todo.id
           :initial_todo_item_name = todo.text
           :disable_edit = "globalEditActive"
           @edit_done="updateTodo"
           @done="flagDone"
-          @edit="editActive">
+          @edit="editActive"
+          @dragstart="startDragging(todo)"
+          @dragover.prevent
+          @drop="handleDrop(todo)"
+        >
         </TodoItem>
     </ul>
   </div>
@@ -57,9 +86,17 @@ function editActive(){
 </template>
 
 <style scoped>
-.container {
+.listItem {
   display: flex;
   flex-direction: column;
+  padding: 5px;
+  background: whitesmoke;
+  border: 15px solid lightgray;
 }
+.listContainer{
+  margin: 15px;
+  padding: 25px 0;
+  box-sizing: border-box;
 
+}
 </style>
