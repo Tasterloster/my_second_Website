@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import TodoDoneButton from "@/TodoDoneButton.vue";
 import TodoEditButton from "@/TodoEditButton.vue";
-import {ref} from "vue";
+import {nextTick, ref, useTemplateRef} from "vue";
 import TodoEditDoneButton from "@/TodoEditDoneButton.vue";
 
 const edit  = ref(false)
+const inputRef = ref<HTMLInputElement | null>(null)
 
 const props = defineProps<{
   initial_id: number
@@ -20,6 +21,13 @@ const emit = defineEmits<{
   (e: 'edit_done', value: string, id: number): void
 }>()
 
+function startEdit(){
+  edit.value = true
+  nextTick(() => {
+    inputRef.value?.focus()
+  })
+}
+
 function editDone(): void {
   emit("edit_done",
       todo_item_name.value , id.value )
@@ -34,18 +42,25 @@ function flagDone(): void {
 <template>
   <div class="container">
     <input type="checkbox">
-    <input v-if="edit" type="text" v-model="todo_item_name"/>
+    <span>
+      {{ list_id +1 }} -
+    </span>
+    <input
+      ref="inputRef"
+      v-if="edit"
+      type="text"
+      v-model="todo_item_name"
+      @keyup.enter="editDone"
+    />
     <span v-if="!edit">
-      {{ list_id +1 }} - {{ todo_item_name }}
+      {{ todo_item_name }}
     </span>
     <TodoDoneButton v-if="!edit"
                     @done="flagDone" />
     <TodoEditButton v-if="!edit"
-                    @edit="edit = true"/>
+                    @edit="startEdit"/>
     <TodoEditDoneButton v-if="edit"
                     @edit_done="editDone" />
-
-
   </div>
 </template>
 
