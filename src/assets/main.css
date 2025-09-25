@@ -1,3 +1,29 @@
 body {
     font-family: "Open Sans", sans-serif;
+    font-size: 1.2em;
+}
+button{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .3em .66em;
+    width: fit-content;
+    min-width: max-content;
+    max-width: 2em;
+    height: fit-content;
+    min-height: max(25px, max-content);
+    max-height: fit-content;
+    font-size: 1em;
+}
+
+button i{
+    font-size: 1em;
+
+}
+
+input[type=text]{
+    border: 1px solid lightgray;
+    border-radius: 1px;
+    padding: .3em .66em;
+    font-size: 1em;
 }

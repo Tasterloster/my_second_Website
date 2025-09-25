@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Header_components from "@/Header_components.vue";
 import TodoList from "@/TodoList.vue";
+import ToolList from "@/ToolList.vue";
 
 </script>
 
@@ -9,13 +10,17 @@ import TodoList from "@/TodoList.vue";
     <header_components/>
   </header>
   <body>
-    <TodoList/>
+  <h1>Todo Liste</h1>
+  <ToolList/>
+  <TodoList/>
   </body>
 </template>
 
 <style scoped>
   body{
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
   }
 </style>

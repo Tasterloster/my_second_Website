@@ -1,5 +1,5 @@
 import {ref} from "vue";
-import { type todo } from "@/TodoInterface.ts"
+import { type todo } from "@/assets/TodoInterface.ts"
 import {todos} from "@/Todos.ts";
 
 

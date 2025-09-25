@@ -7,7 +7,6 @@ import TodoItemWrapper from "@/TodoItemWrapper.vue";
 <template>
   <div>
     <div class="listContainer">
-      <h1>Todo Liste</h1>
       <ul class="list">
         <TodoItemWrapper
           v-for="(todo, idx) in hiddenTodos"
@@ -29,26 +28,6 @@ body{
   margin: 15px;
   box-sizing: border-box;
   justify-content: center;
-}
-
-.listItem {
-  display: flex;
-  flex-direction: column;
-  background: whitesmoke;
-  border: 2px solid lightgray;
-  margin-bottom: 8px;
-  transition: background 0.2s, border 0.2s, opacity 0.2s;
-}
-
-.listItem.dragging {
-  opacity: 0.5;
-  background: lightblue;
-  border-color: blue;
-}
-
-.listItem.dragover {
-  background: lightgreen;
-  border-color: green;
 }
 
 </style>

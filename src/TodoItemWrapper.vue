@@ -7,9 +7,9 @@ import {
   getDragOverItemId, handleDragLeave,
   handleDragOver, handleDrop, resetDraggingItem,
   startDragging
-} from "@/DragAndDrop.ts";
-import { updateTodo, flagDone, editActive, getEditStatus } from "@/Todos";
-import type {todo} from "@/TodoInterface.ts";
+} from "@/DragAndDropHandler.ts";
+import { updateTodo, flagDelete, editActive, getEditStatus } from "@/Todos";
+import type {todo} from "@/assets/TodoInterface.ts";
 
 const props = defineProps<{
   todo: todo
@@ -30,7 +30,7 @@ const props = defineProps<{
             dragover: getDraggingItem() && getDragOverItem() && getDragOverItemId() === todo.id
           }"
       @edit_done="updateTodo"
-      @done="flagDone"
+      @delete="flagDelete"
       @edit="editActive"
       @dragstart="startDragging(todo)"
       @dragover.prevent="handleDragOver(todo)"
@@ -41,5 +41,25 @@ const props = defineProps<{
 </template>
 
 <style scoped>
+
+.listItem {
+  display: flex;
+  flex-direction: column;
+  background: whitesmoke;
+  border: 2px solid lightgray;
+  margin-bottom: 8px;
+  transition: background 0.2s, border 0.2s, opacity 0.2s;
+}
+
+.listItem.dragging {
+  opacity: 0.5;
+  background: lightblue;
+  border-color: blue;
+}
+
+.listItem.dragover {
+  background: lightgreen;
+  border-color: green;
+}
 
 </style>

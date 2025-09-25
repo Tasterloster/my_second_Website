@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TodoDoneButton from "@/TodoDoneButton.vue";
+import TodoDeleteButton from "@/TodoDeleteButton.vue";
 import TodoEditButton from "@/TodoEditButton.vue";
 import {nextTick, ref, useTemplateRef} from "vue";
 import TodoEditDoneButton from "@/TodoEditDoneButton.vue";
@@ -19,7 +19,7 @@ const todo_item_name = ref(props.initial_todo_item_name)
 const id = ref(props.initial_id)
 
 const emit = defineEmits<{
-  (e: 'done', id: number): void
+  (e: 'delete', id: number): void
   (e: 'edit'): void
   (e: 'edit_done', value: string, id: number): void
 }>()
@@ -40,8 +40,8 @@ function editDone(): void {
   })
 }
 
-function flagDone(): void {
-  emit("done", id.value)
+function flagDelete(): void {
+  emit("delete", id.value)
 }
 </script>
 
@@ -49,26 +49,17 @@ function flagDone(): void {
   <div class="container">
     <div class="listItem">
       <input type="checkbox">
-      <br>
       <span >
-        {{ list_id+1}}
+        {{ list_id+1}}.
       </span>
-      <br>
-      <span>
-        -
-      </span>
-      <br>
-      <span>
+      <span class="todoText">
         {{ todo_item_name }}
       </span>
-      <br>
-      <TodoDoneButton
-          @done="flagDone" />
-      <br>
+      <TodoDeleteButton
+          @delete="flagDelete" />
       <TodoEditButton
           :disabled="props.disable_edit"
           @edit="startEdit"/>
-      <br>
     </div>
     <div class="editField">
       <form @submit.prevent="editDone">
@@ -86,11 +77,9 @@ function flagDone(): void {
 </template>
 
 <style scoped>
-body{
-  font-family: "open sans",sans-serif;
-}
 .container{
-
+  max-width: 75vw;
+  min-width: 50vw;
 }
 .listItem {
   display: flex;
@@ -98,24 +87,24 @@ body{
   align-content: center;
   justify-content: space-around;
   padding: .5em .5em .5em .5em;
-  max-width: 50vw;
-  min-width: 25vw;
   text-overflow: ellipsis;
 }
 
 .editField{
   display: flex;
   flex-direction: row;
-  align-content: center;
+  align-items: center;
   justify-content: space-around;
+  padding: .5em 0;
+  gap: .5em;
+  box-sizing: border-box;
 }
-.itemName{
-  overflow:auto;
+
+.todoText{
+  display: block;
+  max-width: min(35vw, 100%);
+  overflow-wrap: break-word;
+  white-space: normal;
 }
-.listItem.span{
-  max-width: 50vw;
-}
-.listItem.input{
-  max-width: 50vw;
-}
+
 </style>

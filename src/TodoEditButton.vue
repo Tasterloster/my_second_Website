@@ -4,7 +4,7 @@
 </script>
 
 <template>
-  <button @click="$emit('edit')"> {{ edit_Button_text }} </button>
+  <button class="editButton"@click="$emit('edit')"> {{ edit_Button_text }} </button>
 </template>
 
 <style scoped>
