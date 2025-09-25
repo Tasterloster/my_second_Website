@@ -81,26 +81,26 @@ function handleDragLeave(todo: todo) {
       <h1>Todo Liste</h1>
       <ul class="list">
         <TodoItem
-            class="listItem"
-            v-for="(todo, idx) in hiddenTodos"
-            :key="todo.id"
-            :list_id="idx"
-            :initial_id="todo.id"
-            :initial_todo_item_name="todo.text"
-            :disable_edit="globalEditActive"
-            draggable="true"
-            :class="{
+          class="listItem"
+          v-for="(todo, idx) in hiddenTodos"
+          :key="todo.id"
+          :list_id="idx"
+          :initial_id="todo.id"
+          :initial_todo_item_name="todo.text"
+          :disable_edit="globalEditActive"
+          draggable="true"
+          :class="{
             dragging: draggingItem && draggingItem.id === todo.id,
             dragover: draggingItem && dragOverItem && dragOverItem.id === todo.id
           }"
-            @edit_done="updateTodo"
-            @done="flagDone"
-            @edit="editActive"
-            @dragstart="startDragging(todo)"
-            @dragover.prevent="handleDragOver(todo)"
-            @dragleave="handleDragLeave(todo)"
-            @drop="handleDrop(todo)"
-            @dragend="draggingItem = null"
+          @edit_done="updateTodo"
+          @done="flagDone"
+          @edit="editActive"
+          @dragstart="startDragging(todo)"
+          @dragover.prevent="handleDragOver(todo)"
+          @dragleave="handleDragLeave(todo)"
+          @drop="handleDrop(todo)"
+          @dragend="draggingItem = null"
         />
       </ul>
     </div>
@@ -121,7 +121,6 @@ body{
 .listItem {
   display: flex;
   flex-direction: column;
-  padding: 1.5em .5em .5em .5em;
   background: whitesmoke;
   border: 2px solid lightgray;
   margin-bottom: 8px;

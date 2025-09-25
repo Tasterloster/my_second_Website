@@ -47,42 +47,41 @@ function flagDone(): void {
 
 <template>
   <div class="container">
-  <div class="listItem">
-    <input type="checkbox">
-    <br>
-    <span>
-      {{ list_id+1}}
-    </span>
-    <br>
-    <span>
-      -
-    </span>
-    <br>
-    <span>
-      {{ todo_item_name }}
-    </span>
-    <br>
-    <TodoDoneButton
-        @done="flagDone" />
-    <br>
-    <TodoEditButton
-        :disabled="props.disable_edit"
-        @edit="startEdit"/>
-    <br>
-  </div>
-  <div class="listitem">
-    <form @submit.prevent="editDone">
-    <input
-        ref="inputRef"
-        v-if="edit"
-        type="text"
-        v-model="todo_item_name"
-    />
-<!--        TODO: make 'Button press enter' not instantly close the input field again-->
-    <TodoEditDoneButton v-if="edit"
-                        @edit_done="editDone" />
-      </form>
-  </div>
+    <div class="listItem">
+      <input type="checkbox">
+      <br>
+      <span >
+        {{ list_id+1}}
+      </span>
+      <br>
+      <span>
+        -
+      </span>
+      <br>
+      <span>
+        {{ todo_item_name }}
+      </span>
+      <br>
+      <TodoDoneButton
+          @done="flagDone" />
+      <br>
+      <TodoEditButton
+          :disabled="props.disable_edit"
+          @edit="startEdit"/>
+      <br>
+    </div>
+    <div class="editField">
+      <form @submit.prevent="editDone">
+      <input
+          ref="inputRef"
+          v-if="edit"
+          type="text"
+          v-model="todo_item_name"
+      />
+      <TodoEditDoneButton v-if="edit"
+                          @edit_done="editDone" />
+        </form>
+    </div>
   </div>
 </template>
 
@@ -90,13 +89,33 @@ function flagDone(): void {
 body{
   font-family: "open sans",sans-serif;
 }
-.container {
-  display: flex;
-  flex-direction: column;
+.container{
+
 }
 .listItem {
   display: flex;
   flex-direction: row;
-  gap: .5em;
+  align-content: center;
+  justify-content: space-around;
+  padding: .5em .5em .5em .5em;
+  max-width: 50vw;
+  min-width: 25vw;
+  text-overflow: ellipsis;
+}
+
+.editField{
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: space-around;
+}
+.itemName{
+  overflow:auto;
+}
+.listItem.span{
+  max-width: 50vw;
+}
+.listItem.input{
+  max-width: 50vw;
 }
 </style>
