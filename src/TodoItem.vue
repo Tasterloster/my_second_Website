@@ -71,16 +71,17 @@ function flagDone(): void {
     <br>
   </div>
   <div class="listitem">
+    <form @submit.prevent="editDone">
     <input
         ref="inputRef"
         v-if="edit"
         type="text"
         v-model="todo_item_name"
-        @keyup.enter="editDone"
     />
 <!--        TODO: make 'Button press enter' not instantly close the input field again-->
     <TodoEditDoneButton v-if="edit"
                         @edit_done="editDone" />
+      </form>
   </div>
   </div>
 </template>
