@@ -6,13 +6,13 @@ const todosSize = 10
 
 export const todos = ref<todo[]>([])
 for (let i = 0; i < todosSize; i++) {
-    todos.value.push({ id: id++, text: `Eintrag ${i}`, delete: false })
+    todos.value.push({ id: id++, text: `Eintrag ${i}`, deleted: false, check: false})
 }
 
 export const globalEditActive = ref(false)
 
 export const hiddenTodos = computed(() => {
-    return todos.value.filter((t) => !t.delete)
+    return todos.value.filter((t) => !t.deleted)
 })
 
 export function updateTodo(new_Name: string, id: number) {
@@ -24,11 +24,11 @@ export function updateTodo(new_Name: string, id: number) {
 }
 
 export function flagDelete(id: number) {
-    const todo_to_set_delete = todos.value.find((t) => t.id === id)
-    if (todo_to_set_delete) {
-        todo_to_set_delete.delete = true
+    const  todo_to_delete = todos.value.find((t) => t.id === id)
+    if ( todo_to_delete) {
+         todo_to_delete.deleted = true
     }
-    editActive()
+    editInactive()
 }
 
 export function editActive() {

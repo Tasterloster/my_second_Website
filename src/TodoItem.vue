@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TodoDeleteButton from "@/TodoDeleteButton.vue";
 import TodoEditButton from "@/TodoEditButton.vue";
-import {nextTick, ref, useTemplateRef} from "vue";
+import {nextTick, ref, useTemplateRef, watch} from "vue";
 import TodoEditDoneButton from "@/TodoEditDoneButton.vue";
 
 
@@ -19,7 +19,7 @@ const todo_item_name = ref(props.initial_todo_item_name)
 const id = ref(props.initial_id)
 
 const emit = defineEmits<{
-  (e: 'delete', id: number): void
+  (e: 'deleted', id: number): void
   (e: 'edit'): void
   (e: 'edit_done', value: string, id: number): void
 }>()
@@ -41,8 +41,14 @@ function editDone(): void {
 }
 
 function flagDelete(): void {
-  emit("delete", id.value)
+  emit("deleted", id.value)
 }
+
+watch(() => props.disable_edit, (newVal) => {
+  if(!newVal){
+    edit.value = false
+  }
+})
 </script>
 
 <template>
@@ -56,21 +62,19 @@ function flagDelete(): void {
         {{ todo_item_name }}
       </span>
       <TodoDeleteButton
-          @delete="flagDelete" />
+          @deleted="flagDelete" />
       <TodoEditButton
           :disabled="props.disable_edit"
           @edit="startEdit"/>
     </div>
-    <div class="editField">
+    <div class="editField" v-if="edit">
       <form @submit.prevent="editDone">
       <input
           ref="inputRef"
-          v-if="edit"
           type="text"
           v-model="todo_item_name"
       />
-      <TodoEditDoneButton v-if="edit"
-                          @edit_done="editDone" />
+      <TodoEditDoneButton @edit_done="editDone" />
         </form>
     </div>
   </div>

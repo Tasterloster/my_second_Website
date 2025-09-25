@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <button @click="$emit('delete')"> {{ delete_Button_text }} </button>
+  <button @click="$emit('deleted')"> {{ delete_Button_text }} </button>
 </template>
 
 <style scoped>

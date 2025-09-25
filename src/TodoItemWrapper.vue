@@ -30,7 +30,7 @@ const props = defineProps<{
             dragover: getDraggingItem() && getDragOverItem() && getDragOverItemId() === todo.id
           }"
       @edit_done="updateTodo"
-      @delete="flagDelete"
+      @deleted="flagDelete"
       @edit="editActive"
       @dragstart="startDragging(todo)"
       @dragover.prevent="handleDragOver(todo)"
