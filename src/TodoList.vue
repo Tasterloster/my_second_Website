@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import TodoItem from "@/TodoItem.vue";
 
 let id = 0
-const todosSize = 100
+const todosSize = 10
 const globalEditActive = ref(false)
 
 interface todo {
@@ -52,6 +52,7 @@ function handleDragOver(todo: todo) {
 }
 
 function handleDrop(targetItem: todo) {
+  console.log(dragOverItem.value)
   if (!draggingItem.value || draggingItem.value.id === targetItem.id) return
 
   const draggedIndex = todos.value.findIndex(i => i.id === draggingItem.value!.id)
@@ -64,6 +65,7 @@ function handleDrop(targetItem: todo) {
 
   draggingItem.value = null
   dragOverItem.value = null
+  console.log(todos)
 }
 
 function handleDragLeave(todo: todo) {
@@ -75,8 +77,8 @@ function handleDragLeave(todo: todo) {
 
 <template>
   <div>
-    <h1>Todo Liste</h1>
     <div class="listContainer">
+      <h1>Todo Liste</h1>
       <ul class="list">
         <TodoItem
             class="listItem"
@@ -89,7 +91,7 @@ function handleDragLeave(todo: todo) {
             draggable="true"
             :class="{
             dragging: draggingItem && draggingItem.id === todo.id,
-            dragover: dragOverItem && dragOverItem.id === todo.id
+            dragover: draggingItem && dragOverItem && dragOverItem.id === todo.id
           }"
             @edit_done="updateTodo"
             @done="flagDone"
@@ -98,6 +100,7 @@ function handleDragLeave(todo: todo) {
             @dragover.prevent="handleDragOver(todo)"
             @dragleave="handleDragLeave(todo)"
             @drop="handleDrop(todo)"
+            @dragend="draggingItem = null"
         />
       </ul>
     </div>
@@ -105,16 +108,20 @@ function handleDragLeave(todo: todo) {
 </template>
 
 <style scoped>
+body{
+  font-family: "open sans",sans-serif;
+}
+
 .listContainer {
   margin: 15px;
-  padding: 25px 0;
   box-sizing: border-box;
+  justify-content: center;
 }
 
 .listItem {
   display: flex;
   flex-direction: column;
-  padding: 5px;
+  padding: 1.5em .5em .5em .5em;
   background: whitesmoke;
   border: 2px solid lightgray;
   margin-bottom: 8px;
@@ -130,5 +137,10 @@ function handleDragLeave(todo: todo) {
 .listItem.dragover {
   background: lightgreen;
   border-color: green;
+}
+
+.h1{
+  display: flex;
+  flex-direction: column;
 }
 </style>

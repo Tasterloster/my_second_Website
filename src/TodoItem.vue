@@ -86,6 +86,9 @@ function flagDone(): void {
 </template>
 
 <style scoped>
+body{
+  font-family: "open sans",sans-serif;
+}
 .container {
   display: flex;
   flex-direction: column;
