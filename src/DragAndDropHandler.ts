@@ -1,5 +1,5 @@
 import {ref} from "vue";
-import { type todo } from "@/assets/TodoInterface.ts"
+import { type todo } from "@/Todos.ts"
 import {todos} from "@/Todos.ts";
 
 
@@ -44,13 +44,15 @@ export function handleDrop(targetItem: todo) {
     const targetIndex = todos.value.findIndex(i => i.id === targetItem.id)
 
     // swap
-    const temp = todos.value[draggedIndex]
-    todos.value[draggedIndex] = todos.value[targetIndex]
-    todos.value[targetIndex] = temp
+    // const temp = todos.value[draggedIndex]
+    // todos.value[draggedIndex] = todos.value[targetIndex]
+    // todos.value[targetIndex] = temp
+
+    todos.value.splice(draggedIndex,1)
+    todos.value.splice(targetIndex, 0,draggingItem.value)
 
     draggingItem.value = null
     dragOverItem.value = null
-    console.log(todos)
 }
 
 export function handleDragLeave(todo: todo) {

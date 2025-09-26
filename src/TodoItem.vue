@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import TodoDeleteButton from "@/TodoDeleteButton.vue";
 import TodoEditButton from "@/TodoEditButton.vue";
-import {nextTick, ref, useTemplateRef, watch} from "vue";
+import {computed, nextTick, ref, useTemplateRef, watch} from "vue";
 import TodoEditDoneButton from "@/TodoEditDoneButton.vue";
+import {editActive, editInactive, getEditStatus} from "@/Todos.ts";
+import SaveButton from "@/SaveButton.vue";
+import CancelButton from "@/CancelButton.vue";
 
 
 const inputRef = ref<HTMLInputElement | null>(null)
@@ -11,44 +14,25 @@ const props = defineProps<{
   initial_id: number
   initial_todo_item_name: string
   list_id: number
-  disable_edit: boolean
 }>();
 
-const edit  = ref(props.disable_edit)
 const todo_item_name = ref(props.initial_todo_item_name)
 const id = ref(props.initial_id)
 
 const emit = defineEmits<{
   (e: 'deleted', id: number): void
-  (e: 'edit'): void
   (e: 'edit_done', value: string, id: number): void
 }>()
 
 function startEdit(){
-  emit("edit")
-  edit.value = true
-  nextTick(() => {
-    inputRef.value?.focus()
-  })
-}
-
-function editDone(): void {
-  emit("edit_done",
-      todo_item_name.value , id.value )
-  nextTick(() => {
-    edit.value = false
-  })
+  editActive()
+  inputRef.value?.focus()
 }
 
 function flagDelete(): void {
   emit("deleted", id.value)
 }
 
-watch(() => props.disable_edit, (newVal) => {
-  if(!newVal){
-    edit.value = false
-  }
-})
 </script>
 
 <template>
@@ -64,18 +48,19 @@ watch(() => props.disable_edit, (newVal) => {
       <TodoDeleteButton
           @deleted="flagDelete" />
       <TodoEditButton
-          :disabled="props.disable_edit"
+          :disabled="getEditStatus"
           @edit="startEdit"/>
     </div>
-    <div class="editField" v-if="edit">
-      <form @submit.prevent="editDone">
-      <input
-          ref="inputRef"
-          type="text"
-          v-model="todo_item_name"
-      />
-      <TodoEditDoneButton @edit_done="editDone" />
-        </form>
+    <div class="editField" v-if="getEditStatus()">
+      <form @submit.prevent="editInactive">
+        <input
+            ref="inputRef"
+            type="text"
+            v-model="todo_item_name"
+        />
+        <SaveButton/>
+        <cancelButton/>
+      </form>
     </div>
   </div>
 </template>

@@ -3,6 +3,7 @@
 import TodoDeleteButton from "@/TodoDeleteButton.vue";
 import SelectAllButton from "@/SelectAllButton.vue";
 import SaveButton from "@/SaveButton.vue";
+import UndoDeleteButton from "@/UndoDeleteButton.vue";
 </script>
 
 <template>
@@ -12,6 +13,8 @@ import SaveButton from "@/SaveButton.vue";
     <TodoDeleteButton
     />
     <SaveButton
+    />
+    <UndoDeleteButton
     />
   </div>
 </template>

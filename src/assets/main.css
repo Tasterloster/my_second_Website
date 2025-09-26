@@ -2,7 +2,7 @@ body {
     font-family: "Open Sans", sans-serif;
     font-size: 1.2em;
 }
-button, input[type="checkbox"]{
+button{
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -27,3 +27,5 @@ input[type=text]{
     padding: .3em .66em;
     font-size: 1em;
 }
+
+input[type="checkbox"]

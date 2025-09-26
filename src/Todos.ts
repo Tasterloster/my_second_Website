@@ -1,5 +1,11 @@
 import {computed, ref} from "vue";
-import type {todo} from "@/assets/TodoInterface.ts";
+
+export interface todo {
+    id: number
+    text: string
+    deleted: boolean
+    check: boolean
+}
 
 let id = 0
 const todosSize = 10
@@ -9,14 +15,13 @@ for (let i = 0; i < todosSize; i++) {
     todos.value.push({ id: id++, text: `Eintrag ${i}`, deleted: false, check: false})
 }
 
-export const globalEditActive = ref(false)
+const globalEditActive = ref(false)
 
 export const hiddenTodos = computed(() => {
     return todos.value.filter((t) => !t.deleted)
 })
 
 export function updateTodo(new_Name: string, id: number) {
-    editInactive()
     const todo_to_update = todos.value.find((t) => t.id === id)
     if (todo_to_update) {
         todo_to_update.text = new_Name

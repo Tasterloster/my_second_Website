@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {hiddenTodos} from "@/Todos.ts";
-import TodoItemWrapper from "@/TodoItemWrapper.vue";
+import TodoItem from "@/TodoItem.vue";
 
 </script>
 
@@ -8,11 +8,12 @@ import TodoItemWrapper from "@/TodoItemWrapper.vue";
   <div>
     <div class="listContainer">
       <ul class="list">
-        <TodoItemWrapper
+        <TodoItem
           v-for="(todo, idx) in hiddenTodos"
           :key="todo.id"
-          :todo="todo"
-          :idx="idx"
+          :initial_id="todo.id"
+          :initial_todo_item_name="todo.text"
+          :list_id="idx"
         />
       </ul>
     </div>
