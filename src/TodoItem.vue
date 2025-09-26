@@ -6,12 +6,11 @@
   <div class="container">
     <div class="listItem">
       <slot name="prefix"></slot>
-      <slot name="content"></slot>
+      <slot name="content" class="todoText"></slot>
       <slot name="actions"></slot>
     </div>
-    <div class="editField">
+    <div class="inputField">
       <slot name="inputField"></slot>
-      <slot name="inputActions"></slot>
     </div>
   </div>
 </template>
@@ -30,7 +29,7 @@
   text-overflow: ellipsis;
 }
 
-.editField{
+.inputField{
   display: flex;
   flex-direction: row;
   align-items: center;

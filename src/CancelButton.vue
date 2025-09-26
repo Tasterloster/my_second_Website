@@ -5,7 +5,7 @@ import {BUTTON_LABELS} from "@/assets/ButtonLabels.ts";
 </script>
 
 <template>
-  <BaseButton v-bind="$attrs"
+  <BaseButton v-bind="$attrs" type="reset"
               #content>{{ BUTTON_LABELS.cancel }}
   </BaseButton>
 </template>
