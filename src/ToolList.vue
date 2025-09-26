@@ -1,16 +1,17 @@
 <script setup lang="ts">
-
-import TodoDeleteButton from "@/TodoDeleteButton.vue";
+import DeleteButton from "@/DeleteButton.vue";
 import SelectAllButton from "@/SelectAllButton.vue";
 import SaveButton from "@/SaveButton.vue";
 import UndoDeleteButton from "@/UndoDeleteButton.vue";
+
+
 </script>
 
 <template>
   <div class ="container">
     <SelectAllButton
     />
-    <TodoDeleteButton
+    <DeleteButton
     />
     <SaveButton
     />

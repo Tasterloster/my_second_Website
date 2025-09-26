@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  const select_All_Button_text = "Select All"
+import BaseButton from "@/BaseButton.vue"
+import {BUTTON_LABELS} from "@/assets/ButtonLabels.ts";
+
 </script>
 
 <template>
-  <button @click="$emit('selectAll')">{{ select_All_Button_text}}</button>
+  <BaseButton v-bind="$attrs"
+              #content>{{ BUTTON_LABELS.selectAll }}
+  </BaseButton>
 </template>
-
-<style scoped>
-
-</style>

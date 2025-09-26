@@ -1,12 +1,13 @@
 import {ref} from "vue";
-import { type todo } from "@/Todos.ts"
-import {todos} from "@/Todos.ts";
+import { type Todo } from "@/Todos.ts"
+import {useTodosStore} from "@/Todos.ts";
 
 
-const draggingItem = ref<todo | null>(null)
-const dragOverItem = ref<todo | null>(null)
+const draggingItem = ref<Todo | null>(null)
+const dragOverItem = ref<Todo | null>(null)
+const store = useTodosStore()
 
-export function setDraggingItem(todo: todo) {
+export function setDraggingItem(todo: Todo) {
     draggingItem.value = todo
 }
 export function resetDraggingItem() {
@@ -19,7 +20,7 @@ export function getDraggingItemId() {
     return draggingItem.value?.id
 }
 
-export function setDragOverItem(todo: todo) {
+export function setDragOverItem(todo: Todo) {
     dragOverItem.value = todo
 }
 export function getDragOverItem() {
@@ -29,33 +30,33 @@ export function getDragOverItemId() {
     return dragOverItem.value?.id
 }
 
-export function startDragging(todo: todo) {
+export function startDragging(todo: Todo) {
     draggingItem.value = todo
 }
 
-export function handleDragOver(todo: todo) {
+export function handleDragOver(todo: Todo) {
     dragOverItem.value = todo
 }
 
-export function handleDrop(targetItem: todo) {
+export function handleDrop(targetItem: Todo) {
    if (!draggingItem.value || draggingItem.value.id === targetItem.id) return
 
-    const draggedIndex = todos.value.findIndex(i => i.id === draggingItem.value!.id)
-    const targetIndex = todos.value.findIndex(i => i.id === targetItem.id)
+    const draggedIndex = store.todos.value.findIndex(i => i.id === draggingItem.value!.id)
+    const targetIndex = store.todos.value.findIndex(i => i.id === targetItem.id)
 
     // swap
     // const temp = todos.value[draggedIndex]
     // todos.value[draggedIndex] = todos.value[targetIndex]
     // todos.value[targetIndex] = temp
 
-    todos.value.splice(draggedIndex,1)
-    todos.value.splice(targetIndex, 0,draggingItem.value)
+    store.todos.value.splice(draggedIndex,1)
+    store.todos.value.splice(targetIndex, 0,draggingItem.value)
 
     draggingItem.value = null
     dragOverItem.value = null
 }
 
-export function handleDragLeave(todo: todo) {
+export function handleDragLeave(todo: Todo) {
     if (dragOverItem.value && dragOverItem.value.id === todo.id) {
         dragOverItem.value = null
     }

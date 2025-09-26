@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  const undo_Delete_Button_Text = "🔄"
+import BaseButton from "@/BaseButton.vue"
+import {BUTTON_LABELS} from "@/assets/ButtonLabels.ts";
+
 </script>
 
 <template>
-  <button @click="$emit('undoDelete')"> {{ undo_Delete_Button_Text }} </button>
+  <BaseButton v-bind="$attrs"
+              #content>{{ BUTTON_LABELS.undo }}
+  </BaseButton>
 </template>
-
-<style scoped>
-
-</style>

@@ -6,6 +6,6 @@ import {BUTTON_LABELS} from "@/assets/ButtonLabels.ts";
 
 <template>
   <BaseButton v-bind="$attrs"
-              #content>{{ BUTTON_LABELS.save }}
+    #content>{{ BUTTON_LABELS.delete }}
   </BaseButton>
 </template>

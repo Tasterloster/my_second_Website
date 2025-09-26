@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Header_components from "@/Header_components.vue";
-import TodoList from "@/TodoList.vue";
+import TodoItemList from "@/TodoItemList.vue";
 import ToolList from "@/ToolList.vue";
 
 </script>
@@ -12,7 +12,7 @@ import ToolList from "@/ToolList.vue";
   <body>
   <h1>Todo Liste</h1>
   <ToolList/>
-  <TodoList/>
+  <TodoItemList/>
   </body>
 </template>
 

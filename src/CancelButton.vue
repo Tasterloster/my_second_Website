@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  const cancel_Button_Text = "🚫"
+import BaseButton from "@/BaseButton.vue"
+import {BUTTON_LABELS} from "@/assets/ButtonLabels.ts";
+
 </script>
 
 <template>
-  <button @click="$emit('cancel')"> {{ cancel_Button_Text }} </button>
+  <BaseButton v-bind="$attrs"
+              #content>{{ BUTTON_LABELS.cancel }}
+  </BaseButton>
 </template>
-
-<style scoped>
-
-</style>
