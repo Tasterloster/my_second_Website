@@ -11,20 +11,24 @@ import {
   getDraggingItemId,
   getDragOverItem,
   getDragOverItemId, handleDragLeave, handleDragOver, handleDrop,
-  resetDraggingItem, startDragging
-} from "@/DragAndDropHandler.ts";
+  resetDraggingItem, setDNDStore, startDragging
+} from "@/DragAndDropHandler";
 
 const store = useTodosStore();
+setDNDStore(store)    // Store Instanz in DnDHandler laden
 const hiddenTodos = store.hiddenTodos
 const isEditing = (id: number) => store.editingTodoId.value === id
+// console.log(hiddenTodos)
+
 const vFocus: Directive<HTMLInputElement, void> = {
   mounted(el){
     nextTick(() => {
       el.focus()
-
     })
   }
 }
+
+
 </script>
 
 <template>
@@ -68,9 +72,8 @@ const vFocus: Directive<HTMLInputElement, void> = {
               <input
                   type="text"
                   v-focus
-                  v-model.lazy="store.editDraft.value"
+                  v-model="store.editDraft.value"
                   @keyup.esc="store.cancelEdit()"
-                  @keyup.enter="store.saveEdit()"
               />
               <save-button @click="store.saveEdit()"/>
               <cancel-button @click="store.cancelEdit()"/>
