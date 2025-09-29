@@ -1,0 +1,62 @@
+[
+  {
+    "id": 0,
+    "text": "Eintrag 0",
+    "deleted": false,
+    "check": false
+  },
+  {
+    "id": 1,
+    "text": "Eintrag 1",
+    "deleted": false,
+    "check": false
+  },
+  {
+    "id": 2,
+    "text": "Eintrag 2",
+    "deleted": false,
+    "check": false
+  },
+  {
+    "id": 3,
+    "text": "Eintrag 3",
+    "deleted": false,
+    "check": false
+  },
+  {
+    "id": 4,
+    "text": "Eintrag 4",
+    "deleted": false,
+    "check": false
+  },
+  {
+    "id": 5,
+    "text": "Eintrag 5",
+    "deleted": false,
+    "check": false
+  },
+  {
+    "id": 6,
+    "text": "Eintrag 6",
+    "deleted": false,
+    "check": false
+  },
+  {
+    "id": 7,
+    "text": "Eintrag 7",
+    "deleted": false,
+    "check": false
+  },
+  {
+    "id": 8,
+    "text": "Eintrag 8",
+    "deleted": false,
+    "check": false
+  },
+  {
+    "id": 9,
+    "text": "Eintrag 9",
+    "deleted": false,
+    "check": false
+  }
+]

@@ -11,14 +11,12 @@ import {
   getDraggingItemId,
   getDragOverItem,
   getDragOverItemId, handleDragLeave, handleDragOver, handleDrop,
-  resetDraggingItem, setDNDStore, startDragging
+  resetDraggingItem, startDragging
 } from "@/DragAndDropHandler";
 
 const store = useTodosStore();
-// setDNDStore(store)    // Store Instanz in DnDHandler laden
 const hiddenTodos = store.hiddenTodos
 const isEditing = (id: number) => store.editingTodoId.value === id
-// console.log(hiddenTodos)
 
 const vFocus: Directive<HTMLInputElement, void> = {
   mounted(el){

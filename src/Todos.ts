@@ -45,7 +45,28 @@ export function createTodosStore() {
         todos.value.some((t) => t.check)
     )
 
+    const allCheckedTodos = computed(() =>
+        todos.value.length > 0 && todos.value.every(t => t.check)
+    )
+
     // --- Actions ---
+
+    function printLog(logText: string[], actionPerformed: string) {
+        if (logText.length > 0) {
+            let logString =""
+            switch (actionPerformed) {
+                case "edited":
+                    logString = `${logText.join(" ")}`
+                    console.log(Date().toString(), ":", logString)
+                    break;
+                default:
+                    logString = `${logText.join(", ")} has been ${actionPerformed}`
+                    console.log(Date().toString(), ": ", logString)
+                    break;
+            }
+        }
+    }
+
     function addTodo(text: string) {                   // neues Todo hinzufügen
         todos.value.push({ id: id++, text, deleted: false, check: false })
     }
@@ -59,43 +80,53 @@ export function createTodosStore() {
 
     function flagDelete(id: number) {                  // Todo als gelöscht markieren
         const todo = todos.value.find((t) => t.id === id)
+        let deleted: string[] = []
+        const actionPerformed = "deleted"
         if (todo) {
             todo.deleted = true
+            deleted.push(`'${todo.text}'`)
         }
         endEdit()                                        // Edit beenden, falls aktiv
+        printLog(deleted, actionPerformed)
     }
 
     function deleteAll(){
+        let deleted :string[] = []
+        const actionPerformed = "deleted"
         todos.value.forEach(t =>{
             if(t.check){
                 t.deleted = true
                 toggleCheck(t.id)
+                deleted.push(`'${t.text}'`)
             }
         })
+        endEdit()
+        printLog(deleted, actionPerformed)
     }
 
     function toggleCheck(id: number) {
         const t = todos.value.find(t => t.id === id)
         if (t) t.check = !t.check
-        console.log(Date().toString());
     }
 
     function toggleAll(){
-        if (anyCheckedTodos.value) {
-            todos.value.forEach(t =>{
-                if(t.check) toggleCheck(t.id)
-            })
-        } else{
-            todos.value.forEach(t =>{
-                if(!t.check) toggleCheck(t.id)
-            })
+        if (allCheckedTodos.value) {
+            todos.value.forEach(t => { if (t.check) t.check = false })
+        } else {
+            todos.value.forEach(t => { if (!t.check) t.check = true })
         }
     }
 
+
     function restoreAll(){
+        let restored :string[] = []
+        const actionPerformed = "restored"
         todos.value.forEach(t => {
-            if(t.deleted) t.deleted = false
-        })
+            if(t.deleted){
+                t.deleted = false
+                restored.push(`'${t.text}'`)
+            }})
+        printLog(restored, actionPerformed)
     }
 
     function startEdit(id: number) {                   // Edit-Modus starten
@@ -106,11 +137,18 @@ export function createTodosStore() {
     }
 
     function saveEdit(){
+        let edited :string[] = []
+        const actionPerformed = "edited"
         const id = editingTodoId.value
         if (id== null) return
         const t = todos.value.find((t) => t.id === id)
-        if (t) t.text = editDraft.value
-        editDraft.value = ""
+        if (t){
+            edited.push(`'${t?.text}'`)
+            edited.push(`has been edited to`)
+            edited.push(`'${editDraft.value}'`)
+            t.text = editDraft.value
+            printLog(edited, actionPerformed)
+        }
         endEdit()
     }
 
@@ -138,8 +176,10 @@ export function createTodosStore() {
         hiddenTodos,
         checkedTodos,
         anyCheckedTodos,
+        allCheckedTodos,
 
         // Actions
+        printLog,
         addTodo,
         updateTodo,
         flagDelete,

@@ -2,14 +2,18 @@
 import BaseButton from "@/BaseButton.vue"
 import {BUTTON_LABELS} from "@/assets/ButtonLabels.ts";
 import {useTodosStore} from "@/Todos.ts";
+import {computed} from "vue";
 
 const store = useTodosStore()
+const label = computed(() =>
+  store.anyCheckedTodos.value ? BUTTON_LABELS.unselectAll : BUTTON_LABELS.selectAll
+)
 </script>
 
 <template>
   <BaseButton v-bind="$attrs">
-  <template #content>
-    {{ store.anyCheckedTodos ? BUTTON_LABELS.selectAll : BUTTON_LABELS.unselectAll }}
-  </template>
+    <template #content>
+      {{ label }}
+    </template>
   </BaseButton>
 </template>
