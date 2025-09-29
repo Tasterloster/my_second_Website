@@ -44,11 +44,20 @@ export function handleDrop(targetItem: Todo) {
     const draggedIndex = store.todos.value.findIndex(i => i.id === draggingItem.value!.id)
     const targetIndex = store.todos.value.findIndex(i => i.id === targetItem.id)
 
-    // swap
-    // const temp = todos.value[draggedIndex]
-    // todos.value[draggedIndex] = todos.value[targetIndex]
-    // todos.value[targetIndex] = temp
+    console.log(
+        draggedIndex,
+        targetIndex,
+        draggingItem,
+        targetItem,
+        store.todos
+    )
 
+    // swap
+    // const temp = store.todos.value[draggedIndex]
+    // store.todos.value[draggedIndex] = store.todos.value[targetIndex]
+    // store.todos.value[targetIndex] = temp
+
+    // Einfügen
     store.todos.value.splice(draggedIndex,1)
     store.todos.value.splice(targetIndex, 0,draggingItem.value)
 

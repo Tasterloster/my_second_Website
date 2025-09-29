@@ -12,6 +12,7 @@ export function useTodosStore() {
     const todos = ref<Todo[]>([])                      // Liste aller Todos
     const globalEditActive = ref(false)                      // global: ob irgendein Edit läuft
     const editingTodoId = ref<number | null>(null)     // ID des aktuell editierten Todos
+    const editDraft = ref<string>("")
 
     // Initial-Daten (10 Beispiel-Todos)
     let id = 0
@@ -60,9 +61,25 @@ export function useTodosStore() {
         endEdit()                                        // Edit beenden, falls aktiv
     }
 
+    function toggleCheck(id: number) {
+        const t = todos.value.find(t => t.id === id)
+        if (t) t.check = !t.check
+    }
+
     function startEdit(id: number) {                   // Edit-Modus starten
         editingTodoId.value = id
         globalEditActive.value = true
+        const t = todos.value.find((t) => t.id === id)
+        editDraft.value = t ? t.text : ""
+    }
+
+    function saveEdit(){
+        const id = editingTodoId.value
+        if (id== null) return
+        const t = todos.value.find((t) => t.id === id)
+        if (t) t.text = editDraft.value
+        editDraft.value = ""
+        endEdit()
     }
 
     function endEdit() {                               // Edit-Modus beenden
@@ -71,6 +88,7 @@ export function useTodosStore() {
     }
 
     function cancelEdit() {                            // Edit-Modus abbrechen
+        editDraft.value = ""
         endEdit()
     }
 
@@ -80,6 +98,7 @@ export function useTodosStore() {
         todos,
         globalEditActive,
         editingTodoId,
+        editDraft,
 
         // Getters
         editStatus,
@@ -91,7 +110,9 @@ export function useTodosStore() {
         addTodo,
         updateTodo,
         flagDelete,
+        toggleCheck,
         startEdit,
+        saveEdit,
         endEdit,
         cancelEdit
     }

@@ -1,34 +1,29 @@
 <script setup lang="ts">
+import {type Directive, nextTick, ref} from "vue"
 import {useTodosStore} from "@/Todos";
 import TodoItem from "@/TodoItem.vue";
 import DeleteButton from "@/DeleteButton.vue";
 import EditButton from "@/EditButton.vue";
 import SaveButton from "@/SaveButton.vue";
 import CancelButton from "@/CancelButton.vue";
+import {
+  getDraggingItem,
+  getDraggingItemId,
+  getDragOverItem,
+  getDragOverItemId, handleDragLeave, handleDragOver, handleDrop,
+  resetDraggingItem, startDragging
+} from "@/DragAndDropHandler.ts";
 
 const store = useTodosStore();
 const hiddenTodos = store.hiddenTodos
-
 const isEditing = (id: number) => store.editingTodoId.value === id
+const vFocus: Directive<HTMLInputElement, void> = {
+  mounted(el){
+    nextTick(() => {
+      el.focus()
 
-function onToggle(todo: { id: number; check: boolean }) {
-  todo.check = !todo.check
-}
-function onEdit(todoId: number) {
-  store.startEdit(todoId)
-}
-function onDelete(todoId: number) {
-  store.flagDelete(todoId)
-}
-function onInput(todoId: number, e: Event) {
-  const val = (e.target as HTMLInputElement).value
-  store.updateTodo(todoId, val)
-}
-function onSave() {
-  store.endEdit()
-}
-function onCancel() {
-  store.cancelEdit()
+    })
+  }
 }
 </script>
 
@@ -37,38 +32,50 @@ function onCancel() {
     <div class="listContainer">
       <ul class="list">
         <TodoItem class="TodoItem"
-            v-for="(todo, idx) in hiddenTodos"
-            :key="todo.id">
+                  v-for="(todo, idx) in hiddenTodos"
+                  :key="todo.id"
+                  draggable="true"
+                  :class="{
+                    dragging: getDraggingItem() && getDraggingItemId() === todo.id,
+                    dragover: getDraggingItem() && getDragOverItem() && getDragOverItemId() === todo.id
+                  }"
+                  @dragstart="startDragging(todo)"
+                  @dragover.prevent="handleDragOver(todo)"
+                  @dragleave="handleDragLeave(todo)"
+                  @drop="handleDrop(todo)"
+                  @dragend="resetDraggingItem()"
+        >
           <template #prefix>
             <input type="checkbox"
-              :checked="todo.check"
-              @change="onToggle(todo)"
+                   :checked="todo.check"
+                   @change="store.toggleCheck(todo.id)"
             />
           </template>
           <template #content>
-            {{ idx+1 }}. {{ todo.text }}
+            {{ idx + 1 }}. {{ todo.text }}
           </template>
           <template #actions>
             <DeleteButton
-              @click="onDelete(todo.id)"
+                @click="store.flagDelete(todo.id)"
             />
             <EditButton
-              v-if="!isEditing(todo.id)"
-              @click="onEdit(todo.id)"
+                v-if="!isEditing(todo.id)"
+                @click="store.startEdit(todo.id)"
             />
           </template>
           <template #inputField v-if="isEditing(todo.id)">
-            <form>
+            <form @submit.prevent="store.saveEdit()">
               <input
-                type="text"
-                :value="todo.text"
-                @input="onInput(todo.id, $event)"
-                @keyup.esc="onCancel"
+                  type="text"
+                  v-focus
+                  v-model.lazy="store.editDraft.value"
+                  @keyup.esc="store.cancelEdit()"
+                  @keyup.enter="store.saveEdit()"
               />
-              <save-button @click.lazy="onSave()" />
-              <cancel-button @click="onCancel()" />
+              <save-button @click="store.saveEdit()"/>
+              <cancel-button @click="store.cancelEdit()"/>
             </form>
-          </template>/
+          </template>
         </TodoItem>
       </ul>
     </div>
@@ -76,8 +83,8 @@ function onCancel() {
 </template>
 
 <style scoped>
-body{
-  font-family: "open sans",sans-serif;
+body {
+  font-family: "open sans", sans-serif;
 }
 
 .listContainer {
@@ -85,7 +92,8 @@ body{
   box-sizing: border-box;
   justify-content: center;
 }
-.TodoItem{
+
+.TodoItem {
   display: flex;
   flex-direction: column;
   background: whitesmoke;
@@ -95,4 +103,14 @@ body{
   transition: background 0.2s, border 0.2s, opacity 0.2s;
 }
 
+.TodoItem.dragging {
+  opacity: 0.5;
+  background: lightblue;
+  border-color: blue;
+}
+
+.TodoItem.dragover {
+  background: lightgreen;
+  border-color: green;
+}
 </style>
