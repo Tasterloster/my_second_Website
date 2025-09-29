@@ -5,5 +5,6 @@
     save: "💾 Save",
     cancel: "🚫 Cancel",
     selectAll: "Select All",
-    undo: "↩️"
+    undo: "↩️",
+    unselectAll: "Unselect All",
   }

@@ -3,19 +3,20 @@ import DeleteButton from "@/DeleteButton.vue";
 import SelectAllButton from "@/SelectAllButton.vue";
 import SaveButton from "@/SaveButton.vue";
 import UndoDeleteButton from "@/UndoDeleteButton.vue";
+import {useTodosStore} from "@/Todos.ts";
 
-
+const store = useTodosStore()
 </script>
 
 <template>
   <div class ="container">
-    <SelectAllButton
+    <SelectAllButton @click="store.toggleAll()"
     />
-    <DeleteButton
+    <DeleteButton @click="store.deleteAll()"
     />
     <SaveButton
     />
-    <UndoDeleteButton
+    <UndoDeleteButton @click="store.restoreAll()"
     />
   </div>
 </template>

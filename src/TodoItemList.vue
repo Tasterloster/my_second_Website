@@ -15,7 +15,7 @@ import {
 } from "@/DragAndDropHandler";
 
 const store = useTodosStore();
-setDNDStore(store)    // Store Instanz in DnDHandler laden
+// setDNDStore(store)    // Store Instanz in DnDHandler laden
 const hiddenTodos = store.hiddenTodos
 const isEditing = (id: number) => store.editingTodoId.value === id
 // console.log(hiddenTodos)
@@ -59,13 +59,15 @@ const vFocus: Directive<HTMLInputElement, void> = {
             {{ idx + 1 }}. {{ todo.text }}
           </template>
           <template #actions>
-            <DeleteButton
-                @click="store.flagDelete(todo.id)"
-            />
+            <div class="actionsContainer">
             <EditButton
                 v-if="!isEditing(todo.id)"
                 @click="store.startEdit(todo.id)"
             />
+            <DeleteButton
+                @click="store.flagDelete(todo.id)"
+            />
+            </div>
           </template>
           <template #inputField v-if="isEditing(todo.id)">
             <form @submit.prevent="store.saveEdit()">
@@ -115,5 +117,14 @@ body {
 .TodoItem.dragover {
   background: lightgreen;
   border-color: green;
+}
+
+.TodoItem .actionsContainer{
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.TodoItem:hover .actionsContainer{
+  opacity: 1;
 }
 </style>

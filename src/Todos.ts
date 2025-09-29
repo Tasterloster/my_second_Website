@@ -7,7 +7,7 @@ export interface Todo {
     check: boolean
 }
 
-export function useTodosStore() {
+export function createTodosStore() {
     // --- State ---
     const todos = ref<Todo[]>([])                      // Liste aller Todos
     const globalEditActive = ref(false)                      // global: ob irgendein Edit läuft
@@ -41,6 +41,10 @@ export function useTodosStore() {
         todos.value.filter((t) => t.check)
     )
 
+    const anyCheckedTodos = computed(() =>
+        todos.value.some((t) => t.check)
+    )
+
     // --- Actions ---
     function addTodo(text: string) {                   // neues Todo hinzufügen
         todos.value.push({ id: id++, text, deleted: false, check: false })
@@ -61,9 +65,37 @@ export function useTodosStore() {
         endEdit()                                        // Edit beenden, falls aktiv
     }
 
+    function deleteAll(){
+        todos.value.forEach(t =>{
+            if(t.check){
+                t.deleted = true
+                toggleCheck(t.id)
+            }
+        })
+    }
+
     function toggleCheck(id: number) {
         const t = todos.value.find(t => t.id === id)
         if (t) t.check = !t.check
+        console.log(Date().toString());
+    }
+
+    function toggleAll(){
+        if (anyCheckedTodos.value) {
+            todos.value.forEach(t =>{
+                if(t.check) toggleCheck(t.id)
+            })
+        } else{
+            todos.value.forEach(t =>{
+                if(!t.check) toggleCheck(t.id)
+            })
+        }
+    }
+
+    function restoreAll(){
+        todos.value.forEach(t => {
+            if(t.deleted) t.deleted = false
+        })
     }
 
     function startEdit(id: number) {                   // Edit-Modus starten
@@ -105,12 +137,16 @@ export function useTodosStore() {
         editingTodo,
         hiddenTodos,
         checkedTodos,
+        anyCheckedTodos,
 
         // Actions
         addTodo,
         updateTodo,
         flagDelete,
+        deleteAll,
         toggleCheck,
+        toggleAll,
+        restoreAll,
         startEdit,
         saveEdit,
         endEdit,
@@ -118,4 +154,11 @@ export function useTodosStore() {
     }
 }
 
-export type TodosStore = ReturnType<typeof useTodosStore>
+let _store: ReturnType<typeof createTodosStore> |null = null
+export function useTodosStore(){
+    if(!_store){
+        _store = createTodosStore()
+    }
+    return _store
+}
+export type TodosStore = ReturnType<typeof createTodosStore>
