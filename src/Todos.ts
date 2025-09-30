@@ -1,4 +1,5 @@
-import { ref, computed, readonly } from "vue"        // Vue-Reaktivität & Hilfsfunktionen
+import { ref, computed, readonly } from "vue"
+import {fetchTodosFromPublic} from "@/TodosIO.ts";        // Vue-Reaktivität & Hilfsfunktionen
 
 export interface Todo {
     id: number
@@ -16,15 +17,17 @@ export function createTodosStore() {
 
     // Initial-Daten (10 Beispiel-Todos)
     let id = 0
-    const todosSize = 10
-    for (let i = 0; i < todosSize; i++) {
-        todos.value.push({
-            id: id++,
-            text: `Eintrag ${i}`,
-            deleted: false,
-            check: false
-        })
-    }
+    // const todosSize = 10
+    // for (let i = 0; i < todosSize; i++) {
+    //     todos.value.push({
+    //         id: id++,
+    //         text: `Eintrag ${i}`,
+    //         deleted: false,
+    //         check: false
+    //     })
+    // }
+
+
 
     // --- Getters ---
     const editStatus = readonly(globalEditActive)      // nur lesbarer Zugriff auf globalEditActive
@@ -50,6 +53,14 @@ export function createTodosStore() {
     )
 
     // --- Actions ---
+    async function loadTodos(filename?: string) {
+        const parsed = await fetchTodosFromPublic(filename)
+        todos.value = parsed
+        id = parsed.length
+            ? Math.max(...parsed.map(t => t.id)) +1
+            :0
+
+    }
 
     function printLog(logText: string[], actionPerformed: string) {
         if (logText.length > 0) {
@@ -57,14 +68,17 @@ export function createTodosStore() {
             switch (actionPerformed) {
                 case "edited":
                     logString = `${logText.join(" ")}`
-                    console.log(Date().toString(), ":", logString)
                     break;
                 default:
                     logString = `${logText.join(", ")} has been ${actionPerformed}`
-                    console.log(Date().toString(), ": ", logString)
                     break;
             }
+            printFormattedLog(logString, actionPerformed)
         }
+    }
+
+    function printFormattedLog(logString: string, actionPerformed: string) {
+        console.log(`[${actionPerformed}]`,Date().toString(), ": ", logString)
     }
 
     function addTodo(text: string) {                   // neues Todo hinzufügen
@@ -117,7 +131,6 @@ export function createTodosStore() {
         }
     }
 
-
     function restoreAll(){
         let restored :string[] = []
         const actionPerformed = "restored"
@@ -142,7 +155,7 @@ export function createTodosStore() {
         const id = editingTodoId.value
         if (id== null) return
         const t = todos.value.find((t) => t.id === id)
-        if (t){
+        if (t && t.text!== editDraft.value) {
             edited.push(`'${t?.text}'`)
             edited.push(`has been edited to`)
             edited.push(`'${editDraft.value}'`)
@@ -179,6 +192,7 @@ export function createTodosStore() {
         allCheckedTodos,
 
         // Actions
+        loadTodos,
         printLog,
         addTodo,
         updateTodo,

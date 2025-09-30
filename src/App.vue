@@ -2,6 +2,13 @@
 import Header_components from "@/Header_components.vue";
 import TodoItemList from "@/TodoItemList.vue";
 import ToolList from "@/ToolList.vue";
+import {onMounted} from "vue";
+import { useTodosStore } from "./Todos";
+
+const store = useTodosStore();
+onMounted(() => {
+  store.loadTodos().catch(console.warn)
+})
 
 </script>
 
