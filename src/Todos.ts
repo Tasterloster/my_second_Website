@@ -5,7 +5,7 @@ export interface Todo {
     id: number
     text: string
     deleted: boolean
-    check: boolean
+    checked: boolean
 }
 
 export function createTodosStore() {
@@ -23,7 +23,7 @@ export function createTodosStore() {
     //         id: id++,
     //         text: `Eintrag ${i}`,
     //         deleted: false,
-    //         check: false
+    //         checked: false
     //     })
     // }
 
@@ -41,25 +41,30 @@ export function createTodosStore() {
     )
 
     const checkedTodos = computed<Todo[]>(() =>        // Todos, die abgehakt sind
-        todos.value.filter((t) => t.check)
+        todos.value.filter((t) => t.checked)
     )
 
     const anyCheckedTodos = computed(() =>
-        todos.value.some((t) => t.check)
+        todos.value.some((t) => t.checked)
     )
 
     const allCheckedTodos = computed(() =>
-        todos.value.length > 0 && todos.value.every(t => t.check)
+        todos.value.length > 0 && todos.value.every(t => t.checked)
     )
 
     // --- Actions ---
     async function loadTodos(filename?: string) {
+        const actionPerformed = "loaded"
+        let parsedString :string[] = []
         const parsed = await fetchTodosFromPublic(filename)
         todos.value = parsed
+        todos.value.forEach(t => {
+            parsedString.push(`'${t.text}'`)
+        })
         id = parsed.length
             ? Math.max(...parsed.map(t => t.id)) +1
             :0
-
+        printLog(parsedString, actionPerformed)
     }
 
     function printLog(logText: string[], actionPerformed: string) {
@@ -82,7 +87,7 @@ export function createTodosStore() {
     }
 
     function addTodo(text: string) {                   // neues Todo hinzufügen
-        todos.value.push({ id: id++, text, deleted: false, check: false })
+        todos.value.push({ id: id++, text, deleted: false, checked: false })
     }
 
     function updateTodo(id: number, newName: string) { // Todo-Text aktualisieren
@@ -108,7 +113,7 @@ export function createTodosStore() {
         let deleted :string[] = []
         const actionPerformed = "deleted"
         todos.value.forEach(t =>{
-            if(t.check){
+            if(t.checked){
                 t.deleted = true
                 toggleCheck(t.id)
                 deleted.push(`'${t.text}'`)
@@ -120,14 +125,14 @@ export function createTodosStore() {
 
     function toggleCheck(id: number) {
         const t = todos.value.find(t => t.id === id)
-        if (t) t.check = !t.check
+        if (t) t.checked = !t.checked
     }
 
     function toggleAll(){
         if (allCheckedTodos.value) {
-            todos.value.forEach(t => { if (t.check) t.check = false })
+            todos.value.forEach(t => { if (t.checked) t.checked = false })
         } else {
-            todos.value.forEach(t => { if (!t.check) t.check = true })
+            todos.value.forEach(t => { if (!t.checked) t.checked = true })
         }
     }
 

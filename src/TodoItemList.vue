@@ -49,7 +49,7 @@ const vFocus: Directive<HTMLInputElement, void> = {
         >
           <template #prefix>
             <input type="checkbox"
-                   :checked="todo.check"
+                   :checked="todo.checked"
                    @change="store.toggleCheck(todo.id)"
             />
           </template>
