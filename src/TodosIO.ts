@@ -1,6 +1,28 @@
 import {type Todo, useTodosStore} from "@/Todos"
 
 // const store = useTodosStore();
+const toBool = (v: unknown) => v=== true || v===  1 || v === "true"
+type RawTodo = {
+    id: unknown
+    text?: unknown
+    deleted?: unknown
+    check?: unknown
+    checked?: unknown
+}
+
+export function parseTodos(raw: unknown): Todo[]{
+    if(!Array.isArray(raw)) {
+        throw new Error(`Invalid JSON: not an array`)
+    }
+    return (raw as RawTodo[]).map(t => ({
+        id: Number(t.id),
+        text: String(t.text ?? ""),
+        deleted: toBool(t.deleted ?? false),
+        checked: toBool(t.check ?? (t as any).checked ?? false),
+    }))
+}
+
+
 
 export async function fetchTodosFromPublic(filename: string = "todos.json"): Promise<Todo[]>{
 
