@@ -22,6 +22,12 @@ export function parseTodos(raw: unknown): Todo[]{
     }))
 }
 
+export function splitTodos(todos: Todo[]){
+    const active = todos.filter(t => !t.deleted)
+    const deleted = todos.filter(t => t.deleted)
+    return {active, deleted}
+}
+
 export function downloadJSON(data: unknown, filename: string){
     const json = JSON.stringify(data, null, 4)
     const blob = new Blob([json], { type: "application/json" })
@@ -49,6 +55,36 @@ export async function fetchTodosFromPublic(filename: string = "todos.json"): Pro
     return parseTodos(data)
 }
 
-export async function createBlobForDownload(todos: Todo[]){
-    const blob = new Blob([JSON.stringify(todos, null, 4)], { type: "application/json" })
+export function saveWithBackupFiles(allTodos: Todo[], opts?:{
+    activeFilename?: string
+    deletedFilename?:string
+    includeTimestamp?: boolean
+}) {
+    const {active, deleted } = splitTodos(allTodos)
+
+    const {
+        activeFilename = "todos.json",
+        deletedFilename = "todos.deleted.json",
+        includeTimestamp = true,
+    } = opts ?? {}
+
+    const stamp = includeTimestamp ? "-" + new Date().toISOString().replace(/[:.]/g, "-") : ""
+
+    if (deleted.length > 0) {
+        downloadJSON(deleted, deletedFilename.replace(/(\.json)?$/, `${stamp}.json`))
+    }
+
+    downloadJSON(active, activeFilename.replace(/(\.json)?$/, `${stamp}.json`))
+
+    return {active, deletedCount: deleted.length}
+}
+
+export function saveActiveOnly(allTodos: Todo[], filename = "todos.json", includeTimestamp = true) {
+    const {active } = splitTodos(allTodos)
+
+    const stamp = includeTimestamp ? "-" + new Date().toISOString().replace(/[:.]/g, "-") : ""
+
+    downloadJSON(active, filename.replace(/(\.json)?$/, `${stamp}.json`))
+
+    return {active}
 }
