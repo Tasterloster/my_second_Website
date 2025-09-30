@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import DeleteButton from "@/DeleteButton.vue";
 import SelectAllButton from "@/SelectAllButton.vue";
-import SaveButton from "@/SaveButton.vue";
+import DownloadButton from "@/DownloadButton.vue";
 import UndoDeleteButton from "@/UndoDeleteButton.vue";
 import {useTodosStore} from "@/Todos.ts";
+import {saveWithBackupFiles} from "@/TodosIO.ts";
 
 const store = useTodosStore()
 </script>
@@ -14,7 +15,7 @@ const store = useTodosStore()
     />
     <DeleteButton @click="store.deleteAll()"
     />
-    <SaveButton
+    <DownloadButton @click="store.saveAll()"
     />
     <UndoDeleteButton @click="store.restoreAll()"
     />

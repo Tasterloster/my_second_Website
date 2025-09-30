@@ -1,5 +1,11 @@
-import { ref, computed, readonly } from "vue"
-import {fetchTodosFromPublic} from "@/TodosIO.ts";        // Vue-Reaktivität & Hilfsfunktionen
+import {ref, computed, readonly, watch} from "vue"
+import {
+    fetchTodosFromPublic,
+    saveWithBackupFiles,
+    saveTodosToLocalStorage,
+    loadTodosFromLocalStorage,
+    clearTodosInLocalStorage
+} from "@/TodosIO.ts";        // Vue-Reaktivität & Hilfsfunktionen
 
 export interface Todo {
     id: number
@@ -10,24 +16,25 @@ export interface Todo {
 
 export function createTodosStore() {
     // --- State ---
+    let id = 0
     const todos = ref<Todo[]>([])                      // Liste aller Todos
     const globalEditActive = ref(false)                      // global: ob irgendein Edit läuft
     const editingTodoId = ref<number | null>(null)     // ID des aktuell editierten Todos
     const editDraft = ref<string>("")
+    const restored = loadTodosFromLocalStorage()
+    if (restored) {
+        todos.value = restored
+        let importString :string[] = []
+        todos.value.forEach(t => importString.push(`'${t.text}'`))
+        printLog(importString, "imported")
+        resetID()
+    }
 
-    // Initial-Daten (10 Beispiel-Todos)
-    let id = 0
-    // const todosSize = 10
-    // for (let i = 0; i < todosSize; i++) {
-    //     todos.value.push({
-    //         id: id++,
-    //         text: `Eintrag ${i}`,
-    //         deleted: false,
-    //         checked: false
-    //     })
-    // }
-
-
+    watch(
+        todos,
+        (val) => saveTodosToLocalStorage(val),
+        {deep: true},
+    )
 
     // --- Getters ---
     const editStatus = readonly(globalEditActive)      // nur lesbarer Zugriff auf globalEditActive
@@ -53,23 +60,21 @@ export function createTodosStore() {
     )
 
     // --- Actions ---
-    async function loadTodos(filename?: string) {
-        const actionPerformed = "loaded"
-        let parsedString :string[] = []
-        const parsed = await fetchTodosFromPublic(filename)
-        todos.value = parsed
-        todos.value.forEach(t => {
-            parsedString.push(`'${t.text}'`)
-        })
-        id = parsed.length
-            ? Math.max(...parsed.map(t => t.id)) +1
-            :0
-        printLog(parsedString, actionPerformed)
-    }
+    // async function loadTodos(filename?: string) {
+    //     const actionPerformed = "loaded"
+    //     let parsedString: string[] = []
+    //     const parsed = await fetchTodosFromPublic(filename)
+    //     todos.value = parsed
+    //     todos.value.forEach(t => {
+    //         parsedString.push(`'${t.text}'`)
+    //     })
+    //     resetID()
+    //     printLog(parsedString, actionPerformed)
+    // }
 
     function printLog(logText: string[], actionPerformed: string) {
         if (logText.length > 0) {
-            let logString =""
+            let logString = ""
             switch (actionPerformed) {
                 case "edited":
                     logString = `${logText.join(" ")}`
@@ -83,11 +88,15 @@ export function createTodosStore() {
     }
 
     function printFormattedLog(logString: string, actionPerformed: string) {
-        console.log(`[${actionPerformed}]`,Date().toString(), ": ", logString)
+        console.log(`[${actionPerformed}]`, Date().toString(), ": ", logString)
+    }
+
+    function resetID() {
+        id = todos.value.length ? Math.max(...todos.value.map((t) => t.id)) + 1 : 0;
     }
 
     function addTodo(text: string) {                   // neues Todo hinzufügen
-        todos.value.push({ id: id++, text, deleted: false, checked: false })
+        todos.value.push({id: id++, text, deleted: false, checked: false})
     }
 
     function updateTodo(id: number, newName: string) { // Todo-Text aktualisieren
@@ -109,11 +118,11 @@ export function createTodosStore() {
         printLog(deleted, actionPerformed)
     }
 
-    function deleteAll(){
-        let deleted :string[] = []
+    function deleteAll() {
+        let deleted: string[] = []
         const actionPerformed = "deleted"
-        todos.value.forEach(t =>{
-            if(t.checked){
+        todos.value.forEach(t => {
+            if (t.checked) {
                 t.deleted = true
                 toggleCheck(t.id)
                 deleted.push(`'${t.text}'`)
@@ -128,22 +137,27 @@ export function createTodosStore() {
         if (t) t.checked = !t.checked
     }
 
-    function toggleAll(){
+    function toggleAll() {
         if (allCheckedTodos.value) {
-            todos.value.forEach(t => { if (t.checked) t.checked = false })
+            todos.value.forEach(t => {
+                if (t.checked) t.checked = false
+            })
         } else {
-            todos.value.forEach(t => { if (!t.checked) t.checked = true })
+            todos.value.forEach(t => {
+                if (!t.checked) t.checked = true
+            })
         }
     }
 
-    function restoreAll(){
-        let restored :string[] = []
+    function restoreAll() {
+        let restored: string[] = []
         const actionPerformed = "restored"
         todos.value.forEach(t => {
-            if(t.deleted){
+            if (t.deleted) {
                 t.deleted = false
                 restored.push(`'${t.text}'`)
-            }})
+            }
+        })
         printLog(restored, actionPerformed)
     }
 
@@ -154,13 +168,13 @@ export function createTodosStore() {
         editDraft.value = t ? t.text : ""
     }
 
-    function saveEdit(){
-        let edited :string[] = []
+    function saveEdit() {
+        let edited: string[] = []
         const actionPerformed = "edited"
         const id = editingTodoId.value
-        if (id== null) return
+        if (id == null) return
         const t = todos.value.find((t) => t.id === id)
-        if (t && t.text!== editDraft.value) {
+        if (t && t.text !== editDraft.value) {
             edited.push(`'${t?.text}'`)
             edited.push(`has been edited to`)
             edited.push(`'${editDraft.value}'`)
@@ -168,6 +182,10 @@ export function createTodosStore() {
             printLog(edited, actionPerformed)
         }
         endEdit()
+    }
+
+    function saveAll() {
+        saveWithBackupFiles(todos.value,)
     }
 
     function endEdit() {                               // Edit-Modus beenden
@@ -197,8 +215,9 @@ export function createTodosStore() {
         allCheckedTodos,
 
         // Actions
-        loadTodos,
+        // loadTodos,
         printLog,
+        printFormattedLog,
         addTodo,
         updateTodo,
         flagDelete,
@@ -208,16 +227,19 @@ export function createTodosStore() {
         restoreAll,
         startEdit,
         saveEdit,
+        saveAll,
         endEdit,
         cancelEdit
     }
 }
 
-let _store: ReturnType<typeof createTodosStore> |null = null
-export function useTodosStore(){
-    if(!_store){
+let _store: ReturnType<typeof createTodosStore> | null = null
+
+export function useTodosStore() {
+    if (!_store) {
         _store = createTodosStore()
     }
     return _store
 }
+
 export type TodosStore = ReturnType<typeof createTodosStore>

@@ -6,9 +6,9 @@ import {onMounted} from "vue";
 import { useTodosStore } from "./Todos";
 
 const store = useTodosStore();
-onMounted(() => {
-  store.loadTodos().catch(console.warn)
-})
+// onMounted(() => {
+//   store.loadTodos().catch(console.warn)
+// })
 
 </script>
 

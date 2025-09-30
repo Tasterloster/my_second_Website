@@ -1,6 +1,5 @@
-import {type Todo, useTodosStore} from "@/Todos"
+import {type Todo} from "@/Todos"
 
-// const store = useTodosStore();
 const toBool = (v: unknown) => v=== true || v===  1 || v === "true"
 type RawTodo = {
     id: unknown
@@ -9,6 +8,9 @@ type RawTodo = {
     check?: unknown
     checked?: unknown
 }
+
+const TODOS_KEY = "todos.v1"
+const TS_KEY = "todos.updatedAt.v1"
 
 export function parseTodos(raw: unknown): Todo[]{
     if(!Array.isArray(raw)) {
@@ -26,6 +28,30 @@ export function splitTodos(todos: Todo[]){
     const active = todos.filter(t => !t.deleted)
     const deleted = todos.filter(t => t.deleted)
     return {active, deleted}
+}
+
+export function saveTodosToLocalStorage(todos: Todo[]) {
+    const json = JSON.stringify(todos)
+    localStorage.setItem(TODOS_KEY, json)
+    localStorage.setItem(TS_KEY, new Date().toISOString())
+}
+
+export function loadTodosFromLocalStorage(): Todo[] | null{
+    const raw = localStorage.getItem(TODOS_KEY)
+    if (!raw) {
+        return null
+    }
+    try{
+        const data = JSON.parse(raw)
+        return parseTodos(data)
+    } catch{
+        return null
+    }
+}
+
+export function clearTodosInLocalStorage(){
+    localStorage.removeItem(TODOS_KEY)
+    localStorage.removeItem(TS_KEY)
 }
 
 export function downloadJSON(data: unknown, filename: string){
