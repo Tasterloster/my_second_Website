@@ -5,6 +5,8 @@ import DownloadButton from "@/DownloadButton.vue";
 import UndoDeleteButton from "@/UndoDeleteButton.vue";
 import {useTodosStore} from "@/Todos.ts";
 import {saveWithBackupFiles} from "@/TodosIO.ts";
+import BaseButton from "@/BaseButton.vue";
+import {BUTTON_LABELS} from "@/assets/ButtonLabels.ts";
 
 const store = useTodosStore()
 </script>
@@ -17,6 +19,9 @@ const store = useTodosStore()
     />
     <DownloadButton @click="store.saveAll()"
     />
+    <BaseButton @click="store.importAll()" #content>
+      {{BUTTON_LABELS.upload}}
+    </BaseButton>
     <UndoDeleteButton @click="store.restoreAll()"
     />
   </div>

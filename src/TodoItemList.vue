@@ -17,6 +17,7 @@ import SaveButton from "@/SaveButton.vue";
 
 const store = useTodosStore();
 const hiddenTodos = store.hiddenTodos
+const todos = store.todos
 const isEditing = (id: number) => store.editingTodoId.value === id
 
 const vFocus: Directive<HTMLInputElement, void> = {
@@ -68,7 +69,7 @@ const vFocus: Directive<HTMLInputElement, void> = {
             />
             </div>
           </template>
-          <template #inputField v-if="isEditing(todo.id)">
+          <template #inputContainer v-if="isEditing(todo.id)">
             <form @submit.prevent="store.saveEdit()">
               <input
                   type="text"
@@ -93,7 +94,6 @@ body {
 
 .listContainer {
   margin: 15px;
-  box-sizing: border-box;
   justify-content: center;
 }
 
@@ -126,4 +126,5 @@ body {
 .TodoItem:hover .actionsContainer{
   opacity: 1;
 }
+
 </style>

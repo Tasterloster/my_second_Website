@@ -7,5 +7,6 @@
     selectAll: "Select All",
     undo: "↩️",
     unselectAll: "Unselect All",
-    download: "⬇️ Download"
+    download: "⬇️ Download",
+    upload: "⬆️ Upload"
   }

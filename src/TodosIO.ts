@@ -9,8 +9,9 @@ type RawTodo = {
     checked?: unknown
 }
 
-const TODOS_KEY = "todos.v1"
-const TS_KEY = "todos.updatedAt.v1"
+const TODOS_ALL_KEY = "todos.v1"
+const TRASH_CURR_KEY = "todos.trash.curr.v1"
+// const TRASH_PREV_KEY = "todos.trash.prev.v1"
 
 export function parseTodos(raw: unknown): Todo[]{
     if(!Array.isArray(raw)) {
@@ -31,28 +32,40 @@ export function splitTodos(todos: Todo[]){
 }
 
 export function saveTodosToLocalStorage(todos: Todo[]) {
-    const json = JSON.stringify(todos)
-    localStorage.setItem(TODOS_KEY, json)
-    localStorage.setItem(TS_KEY, new Date().toISOString())
+    let { active, deleted } = splitTodos(todos)
+    const jsonActive = JSON.stringify(active)
+    localStorage.setItem(TODOS_ALL_KEY, jsonActive)
+    const jsonDeleted = JSON.stringify(deleted)
+    localStorage.setItem(TRASH_CURR_KEY, jsonDeleted)
 }
 
-export function loadTodosFromLocalStorage(): Todo[] | null{
-    const raw = localStorage.getItem(TODOS_KEY)
+// export function saveCurrDeletedIntoPrevDeleted(todos: Todo[]){
+//     let { active, deleted } = splitTodos(todos)
+//     const jsonDeleted = JSON.stringify(deleted)
+//     localStorage.setItem(TRASH_PREV_KEY, jsonDeleted)
+// }
+
+export function loadTodosFromLocalStorage(storage: string): Todo[]{
+    storage = storage==="" ? TODOS_ALL_KEY : TRASH_CURR_KEY
+    const raw = localStorage.getItem(storage)
     if (!raw) {
-        return null
+        return []
     }
     try{
         const data = JSON.parse(raw)
         return parseTodos(data)
     } catch{
-        return null
+        return []
     }
 }
 
-export function clearTodosInLocalStorage(){
-    localStorage.removeItem(TODOS_KEY)
-    localStorage.removeItem(TS_KEY)
+export function deleteCurrentTrash(){
+    localStorage.removeItem(TRASH_CURR_KEY)
 }
+
+// export function deleteBackupTrash(){
+//     localStorage.removeItem(TRASH_PREV_KEY)
+// }
 
 export function downloadJSON(data: unknown, filename: string){
     const json = JSON.stringify(data, null, 4)

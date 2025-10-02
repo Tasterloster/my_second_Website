@@ -3,47 +3,78 @@
 </script>
 
 <template>
-  <div class="container">
-    <div class="listItem">
+  <div class="listItem">
+    <div class="prefix">
       <slot name="prefix"></slot>
-      <slot name="content" class="todoText"></slot>
+    </div>
+    <div class="content">
+      <slot name="content" class="contentText"></slot>
+    </div>
+    <div class="actions">
       <slot name="actions"></slot>
     </div>
-    <div class="inputField">
-      <slot name="inputField"></slot>
+    <div class="inputContainer">
+      <slot name="inputContainer"></slot>
     </div>
   </div>
 </template>
 
 <style scoped>
-.container{
+
+.listItem {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* links | mitte (flex) | rechts */
+  grid-template-rows: auto auto;       /* Zeile 1: Content, Zeile 2: Editor */
+  column-gap: .5rem;
+  row-gap: .5rem;
+  padding: .5rem;
+  box-sizing: border-box;
+  background: whitesmoke;
+  border: 2px solid lightgray;
+  border-radius: 6px;
   max-width: 75vw;
   min-width: 50vw;
 }
-.listItem {
+
+.prefix{
+  grid-column: 1;
+  grid-row: 1;
   display: flex;
-  flex-direction: row;
-  align-content: center;
-  justify-content: space-around;
-  padding: .5em .5em .5em .5em;
-  text-overflow: ellipsis;
+  align-items: flex-start;
 }
 
-.inputField{
+.actions{
+  grid-column: 3;
+  grid-row: 1 / span 2;       /* über Content + Editor */
+  align-self: center;         /* vertikal mittig in der gesamten Item-Höhe */
   display: flex;
-  flex-direction: row;
+  gap: .5rem;
+}
+
+.inputContainer {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-around;
-  padding: .5em 0;
-  gap: .5em;
-  box-sizing: border-box;
+  gap: .5rem;
+  min-width: 0;
 }
 
-.todoText{
-  display: block;
-  max-width: min(35vw, 100%);
+.contentText {
+  min-width: 0;
+  max-width: 100%;
   overflow-wrap: break-word;
   white-space: normal;
+  word-break: break-word;
 }
 
+.content {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;               /* wichtig für korrektes Umbrechen */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 </style>

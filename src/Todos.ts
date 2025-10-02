@@ -1,10 +1,8 @@
-import {ref, computed, readonly, watch} from "vue"
+import {ref, computed, readonly, watch, onUnmounted, onBeforeUnmount, onMounted} from "vue"
 import {
-    fetchTodosFromPublic,
     saveWithBackupFiles,
     saveTodosToLocalStorage,
-    loadTodosFromLocalStorage,
-    clearTodosInLocalStorage
+    loadTodosFromLocalStorage, fetchTodosFromPublic, saveCurrDeletedIntoPrevDeleted
 } from "@/TodosIO.ts";        // Vue-Reaktivität & Hilfsfunktionen
 
 export interface Todo {
@@ -18,23 +16,30 @@ export function createTodosStore() {
     // --- State ---
     let id = 0
     const todos = ref<Todo[]>([])                      // Liste aller Todos
+    const deletedTodos = ref<Todo[] >([])                      // Liste aller Todos
+    const restoredTodos = ref<Todo[] >([])                      // Liste aller Todos
     const globalEditActive = ref(false)                      // global: ob irgendein Edit läuft
     const editingTodoId = ref<number | null>(null)     // ID des aktuell editierten Todos
     const editDraft = ref<string>("")
-    const restored = loadTodosFromLocalStorage()
-    if (restored) {
-        todos.value = restored
+
+    watch(
+        todos,(val) => saveTodosToLocalStorage(val),
+        {deep: true},
+    )
+
+    restoredTodos.value = loadTodosFromLocalStorage("")
+    // console.log("[restored]: todos list", restoredTodos.value)
+    deletedTodos.value = loadTodosFromLocalStorage("deleted")
+    // console.log("[restored]: trash list", restoredTodos.value)
+    if (restoredTodos.value) {
+        todos.value = restoredTodos.value
         let importString :string[] = []
         todos.value.forEach(t => importString.push(`'${t.text}'`))
         printLog(importString, "imported")
         resetID()
     }
 
-    watch(
-        todos,
-        (val) => saveTodosToLocalStorage(val),
-        {deep: true},
-    )
+
 
     // --- Getters ---
     const editStatus = readonly(globalEditActive)      // nur lesbarer Zugriff auf globalEditActive
@@ -72,6 +77,8 @@ export function createTodosStore() {
     //     printLog(parsedString, actionPerformed)
     // }
 
+
+
     function printLog(logText: string[], actionPerformed: string) {
         if (logText.length > 0) {
             let logString = ""
@@ -95,39 +102,44 @@ export function createTodosStore() {
         id = todos.value.length ? Math.max(...todos.value.map((t) => t.id)) + 1 : 0;
     }
 
-    function addTodo(text: string) {                   // neues Todo hinzufügen
+    function addTodo(text: string) {
         todos.value.push({id: id++, text, deleted: false, checked: false})
     }
 
-    function updateTodo(id: number, newName: string) { // Todo-Text aktualisieren
+    function updateTodo(id: number, newName: string) {
         const todo = todos.value.find((t) => t.id === id)
         if (todo) {
             todo.text = newName
         }
     }
 
-    function flagDelete(id: number) {                  // Todo als gelöscht markieren
-        const todo = todos.value.find((t) => t.id === id)
+    function flagDelete(id: number) {
+        const t = todos.value.find((t) => t.id === id)
         let deleted: string[] = []
         const actionPerformed = "deleted"
-        if (todo) {
-            todo.deleted = true
-            deleted.push(`'${todo.text}'`)
-        }
-        endEdit()                                        // Edit beenden, falls aktiv
+        if(!t) return
+        t.deleted = true
+        deletedTodos.value.push(t)
+        todos.value = todos.value.filter(x => x.id !== id)
+        deleted.push(`'${t?.text}'`)
+        endEdit()
         printLog(deleted, actionPerformed)
     }
 
     function deleteAll() {
         let deleted: string[] = []
         const actionPerformed = "deleted"
+        console.log("[todos]: ", todos.value, "[deletedTodos]: ", deletedTodos.value)
         todos.value.forEach(t => {
             if (t.checked) {
+                flagDelete(t.id)
                 t.deleted = true
                 toggleCheck(t.id)
+                deletedTodos.value?.push(t)
                 deleted.push(`'${t.text}'`)
             }
         })
+        console.log("[todos]: ", todos.value, "[deletedTodos]: ", deletedTodos.value)
         endEdit()
         printLog(deleted, actionPerformed)
     }
@@ -152,12 +164,18 @@ export function createTodosStore() {
     function restoreAll() {
         let restored: string[] = []
         const actionPerformed = "restored"
-        todos.value.forEach(t => {
-            if (t.deleted) {
-                t.deleted = false
-                restored.push(`'${t.text}'`)
-            }
-        })
+        if(deletedTodos) {
+            deletedTodos.value?.forEach(t => {
+                let alreadyInList = todos.value.filter(x => t.id === x.id)
+                console.log("[restored]", alreadyInList)
+                if (!alreadyInList) {
+                    restored.push(`'${t.text}'`)
+                    t.deleted = false
+                    t.checked = false
+                }
+            })
+            todos.value = deletedTodos.value
+        }
         printLog(restored, actionPerformed)
     }
 
@@ -198,6 +216,17 @@ export function createTodosStore() {
         endEdit()
     }
 
+    async function importAll(filename = "todos.json"){
+        try{
+            const parsed = await fetchTodosFromPublic(filename)
+            todos.value = parsed
+            resetID()
+        } catch(e) {
+            console.warn("import failed:", e ?? e)
+        }
+
+    }
+
     // --- Public API ---
     return {
         // State
@@ -229,7 +258,8 @@ export function createTodosStore() {
         saveEdit,
         saveAll,
         endEdit,
-        cancelEdit
+        cancelEdit,
+        importAll
     }
 }
 
